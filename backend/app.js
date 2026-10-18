@@ -1,0 +1,12 @@
+import express from 'express';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import {categories,entries} from './data/catalog.js';
+export const app=express();
+app.get('/api/health',(_,res)=>res.json({status:'ok'}));
+app.get('/api/categories',(_,res)=>res.json(categories));
+app.get('/api/entries',(req,res)=>{const {category,q='',group}=req.query;const query=String(q).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();res.json(entries.filter(e=>(!category||e.category===category)&&(!group||e.group===group)&&`${e.name} ${e.group} ${e.summary} ${e.detail||''} ${e.fruit||''}`.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(query)));});
+app.get('/api/entries/:id',(req,res)=>{const entry=entries.find(e=>e.id===req.params.id);if(!entry)return res.status(404).json({error:'Conteúdo não encontrado'});res.json(entry);});
+const dist=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../frontend/dist');
+app.use(express.static(dist));
+app.get('/{*path}',(req,res)=>{if(req.path.startsWith('/api/'))return res.status(404).json({error:'Rota não encontrada'});res.sendFile(path.join(dist,'index.html'));});
