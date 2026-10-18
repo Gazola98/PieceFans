@@ -1,0 +1,1 @@
+{"name":"piecefans","private":true,"workspaces":["frontend","backend"],"scripts":{"dev":"concurrently -n api,web \"npm run dev -w backend\" \"npm run dev -w frontend\"","build":"npm run build -w frontend","start":"npm start -w backend","test":"npm test -w backend"},"devDependencies":{"concurrently":"^9.2.1"}}
